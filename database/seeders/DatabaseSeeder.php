@@ -24,9 +24,9 @@ class DatabaseSeeder extends Seeder
 
         $bookingManagementPermission=Permission::create(['name'=>PermissionEnum::bookingManagement->value]);
 
-        $userManagementPermission=Permission::create([PermissionEnum::UserManagement->value]);
+        $userManagementPermission=Permission::create(['name'=>PermissionEnum::UserManagement->value]);
 
-        $roomManagementPermission=Permission::create([PermissionEnum::RoomsManagement->value]);
+        $roomManagementPermission=Permission::create([ 'name'=>PermissionEnum::RoomsManagement->value]);
 
         $userRole->syncPermissions([$bookingManagementPermission]);
         $adminRole->syncPermissions([$bookingManagementPermission,$roomManagementPermission,$userManagementPermission]);
