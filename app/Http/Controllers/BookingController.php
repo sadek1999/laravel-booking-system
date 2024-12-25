@@ -15,9 +15,9 @@ class BookingController extends Controller
 
     public function index()
     {
-        $data=Booking::latest()->paginate();
-        return Inertia::render('Booing/index',[
-            'bookings'=>$data
+        $data = Booking::latest()->paginate();
+        return Inertia::render('Booing/index', [
+            'bookings' => $data
         ]);
     }
 
@@ -41,7 +41,7 @@ class BookingController extends Controller
             'date' => 'required|date|after_or_equal:today', // Ensure date is today or in the future
 
         ]);
-        $validateData['user_id']=Auth::user()->id;
+        $validateData['user_id'] = Auth::user()->id;
 
         Booking::create($validateData);
 
@@ -53,9 +53,9 @@ class BookingController extends Controller
      */
     public function show(Booking $booking)
     {
-        return Inertia::render('Booking/show',[
-            'booking'=>$booking
-        ]) ;
+        return Inertia::render('Booking/show', [
+            'booking' => $booking
+        ]);
     }
 
     /**
@@ -63,8 +63,8 @@ class BookingController extends Controller
      */
     public function edit(Booking $booking)
     {
-        return Inertia::render('Booking/edit',[
-            'booking'=>$booking
+        return Inertia::render('Booking/edit', [
+            'booking' => $booking
         ]);
     }
 
@@ -73,26 +73,27 @@ class BookingController extends Controller
      */
     public function update(Request $request, Booking $booking)
     {
-        if($booking->user_id!==Auth::user()->id){
-            return redirect()->back()->withErrors(['error'=>'you are not authorized for update this bookings']);
+        if ($booking->user_id !== Auth::user()->id) {
+            return redirect()->back()->withErrors(['error' => 'you are not authorized for update this bookings']);
         };
-        $validateData=$request->validate([
-           'room_id' => 'integer|exists:rooms,id',
+        $validateData = $request->validate([
+            'room_id' => 'integer|exists:rooms,id',
             'start_time' => 'date_format:H:i',
             'end_time' => 'date_format:H:i|after:start_time',
             'date' => 'date|after_or_equal:today',
         ]);
         $booking->update($validateData);
-        return redirect()->route('index')->with('success','successfully update the booking');
-
+        return redirect()->route('index')->with('success', 'successfully update the booking');
     }
 
     /**
      * Remove the specified resource from storage.
      */
     public function destroy(Booking $booking)
-    {$authUser=Auth::user()->id;
-        if()
-
+    {
+        $authUser = Auth::user();
+        if ($authUser->hasRole('admin') || $booking->user_id == $authUser->id && $booking->delete()) {
+            return redirect()->route('bookings.index')->with('success', 'Booking deleted successfully!');
+        }
     }
 }
